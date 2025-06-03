@@ -205,7 +205,7 @@ const HomePage: FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h7.5M8.25 12h7.5m-7.5 5.25h7.5M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                 </svg>
                 <h2 className="text-2xl font-semibold mb-2">Belum Ada Tugas</h2>
-                <p className="text-slate-300">Mulai tambahkan tugas pertama Anda untuk diprioritaskan!</p>
+                <p className="text-slate-300">Mulai tambahkan tugas pertama untuk diprioritaskan!</p>
             </div>
         )}
       </main>
@@ -233,7 +233,7 @@ const HomePage: FC = () => {
         <p className="text-sm text-slate-500">
           &copy; {new Date().getFullYear()} SkripSync. Dibuat dengan cinta.
           <br />
-          Developed by Febri, Adzka, dan Pijar.
+          Developed by Febri, Adzka, and Pijar.
         </p>
       </footer>
     </div>

@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, FC, FormEvent, ChangeEvent } from 'react';
+import { useState, FC, FormEvent, ChangeEvent, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { NewTaskData } from '../app/page';
+import { TaskFormData, Task } from '../app/page';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddTask: (taskData: NewTaskData) => void;
+  onSaveTask: (taskData: TaskFormData, id?: string) => void;
+  editingTask: Task | null;
 }
 
 interface Criterion {
@@ -18,13 +19,57 @@ interface Criterion {
   help: string;
 }
 
-const Modal: FC<ModalProps> = ({ isOpen, onClose, onAddTask }) => {
+const TaskModal: FC<ModalProps> = ({ isOpen, onClose, onSaveTask, editingTask }) => {
   const [taskName, setTaskName] = useState<string>('');
   const [deadline, setDeadline] = useState<string>('');
   const [urgency, setUrgency] = useState<string>('3');
   const [impact, setImpact] = useState<string>('3');
   const [effort, setEffort] = useState<string>('3');
   const [error, setError] = useState<string>('');
+
+  const SUBMIT_BUTTON_ID = "task-modal-submit-button";
+
+  useEffect(() => {
+    if (editingTask) {
+      setTaskName(editingTask.taskName);
+      setDeadline(editingTask.deadline || '');
+      setUrgency(String(editingTask.urgency));
+      setImpact(String(editingTask.impact));
+      setEffort(String(editingTask.effort));
+    } else {
+      setTaskName('');
+      setDeadline('');
+      setUrgency('3');
+      setImpact('3');
+      setEffort('3');
+    }
+    setError('');
+  }, [editingTask, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      } else if (event.key === 'Enter') {
+        event.preventDefault(); 
+        
+        const submitButton = document.getElementById(SUBMIT_BUTTON_ID) as HTMLButtonElement | null;
+        if (submitButton) {
+          submitButton.click();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose, onSaveTask, editingTask, taskName, deadline, urgency, impact, effort]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,14 +78,7 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, onAddTask }) => {
       return;
     }
     
-    onAddTask({ taskName, deadline, urgency, impact, effort });
-    setTaskName('');
-    setDeadline('');
-    setUrgency('3');
-    setImpact('3');
-    setEffort('3');
-    setError('');
-    onClose();
+    onSaveTask({ taskName, deadline, urgency, impact, effort }, editingTask?.id);
   };
 
   if (!isOpen) return null;
@@ -51,12 +89,15 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, onAddTask }) => {
     { id: 'effort', label: 'Estimasi Usaha', value: effort, setter: setEffort, help: "Seberapa sulit/banyak usaha yang dibutuhkan? (1: Sangat mudah - 5: Sangat sulit)" },
   ];
 
+  const modalTitle = editingTask ? "Edit Tugas" : "Tambah Tugas Baru";
+  const submitButtonText = editingTask ? "Simpan Perubahan" : "Simpan Tugas";
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 transition-opacity duration-300 ease-in-out">
       <div className="bg-slate-800 p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all duration-300 ease-in-out scale-100 opacity-100">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold text-sky-400">Tambah Tugas Baru</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-200 transition-colors">
+          <h2 className="text-2xl font-semibold text-sky-400">{modalTitle}</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-200 hover:cursor-pointer transition-colors">
             <XMarkIcon className="h-7 w-7" />
           </button>
         </div>
@@ -122,15 +163,16 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, onAddTask }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2.5 border border-slate-600 text-slate-300 rounded-lg hover:bg-slate-700 transition-colors"
+              className="px-6 py-2.5 border border-slate-600 text-slate-300 rounded-lg hover:bg-slate-700 hover:cursor-pointer transition-colors"
             >
               Batal
             </button>
             <button
+              id={SUBMIT_BUTTON_ID}
               type="submit"
-              className="px-6 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all"
+              className="px-6 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:cursor-pointer transition-all"
             >
-              Simpan Tugas
+              {submitButtonText}
             </button>
           </div>
         </form>
@@ -139,4 +181,4 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, onAddTask }) => {
   );
 };
 
-export default Modal;
+export default TaskModal;

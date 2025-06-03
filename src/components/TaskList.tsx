@@ -4,9 +4,11 @@ import { Task } from '../app/page';
 
 interface TaskListProps {
   tasks: Task[];
+  onEditTask: (task: Task) => void; // Tambahkan prop untuk handle edit
+  onDeleteTask: (taskId: string) => void; // Tambahkan prop untuk handle delete
 }
 
-const TaskList: FC<TaskListProps> = ({ tasks }) => {
+const TaskList: FC<TaskListProps> = ({ tasks, onEditTask, onDeleteTask }) => {
   if (!tasks || tasks.length === 0) {
     return null; 
   }
@@ -14,7 +16,12 @@ const TaskList: FC<TaskListProps> = ({ tasks }) => {
   return (
     <div className="space-y-4">
       {tasks.map((task) => (
-        <TaskItem key={task.id} task={task} />
+        <TaskItem 
+          key={task.id} 
+          task={task} 
+          onEdit={() => onEditTask(task)} // Teruskan fungsi edit
+          onDelete={() => onDeleteTask(task.id)} // Teruskan fungsi delete
+        />
       ))}
     </div>
   );

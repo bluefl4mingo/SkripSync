@@ -2,9 +2,10 @@
 
 import Head from 'next/head';
 import { useState, useEffect, useCallback, FC } from 'react';
-import Modal from '../components/Modal';
+import TaskModal from '../components/TaskModal';
 import TaskList from '../components/TaskList';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
+import ConfirmModal from '../components/ConfirmModal';
 
 export interface Task {
   id: string;
@@ -16,11 +17,11 @@ export interface Task {
   score: number;
 }
 
-export interface NewTaskData {
+export interface TaskFormData {
   taskName: string;
-  deadline: string; 
-  urgency: string;  
-  impact: string;   
+  deadline: string;
+  urgency: string;
+  impact: string;
   effort: string;
 }
 
@@ -33,7 +34,10 @@ const WEIGHTS = {
 
 const HomePage: FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState<boolean>(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
+  const [taskToDeleteId, setTaskToDeleteId] = useState<string | null>(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [isClient, setIsClient] = useState<boolean>(false);
 
   useEffect(() => {
@@ -74,25 +78,76 @@ const HomePage: FC = () => {
     return parseFloat(score.toFixed(2));
   }, []);
 
-  const handleAddTask = useCallback((newTaskData: NewTaskData) => {
+  const handleOpenAddModal = () => {
+    setEditingTask(null);
+    setIsTaskModalOpen(true);
+  };
+
+  const handleOpenEditModal = (task: Task) => {
+    setEditingTask(task);
+    setIsTaskModalOpen(true);
+  };
+
+  const handleCloseTaskModal = () => {
+    setIsTaskModalOpen(false);
+    setEditingTask(null);
+  };
+
+  const handleSaveTask = useCallback((taskData: TaskFormData, id?: string) => {
     const score = calculatePriorityScore({
-      urgency: newTaskData.urgency,
-      impact: newTaskData.impact,
-      effort: newTaskData.effort,
+      urgency: taskData.urgency,
+      impact: taskData.impact,
+      effort: taskData.effort,
     });
 
-    const taskWithScore: Task = {
-      id: crypto.randomUUID(),
-      taskName: newTaskData.taskName,
-      deadline: newTaskData.deadline || undefined,
-      urgency: parseInt(newTaskData.urgency, 10),
-      impact: parseInt(newTaskData.impact, 10),
-      effort: parseInt(newTaskData.effort, 10),
-      score,
-    };
-    setTasks((prevTasks) => [...prevTasks, taskWithScore]);
-    setIsModalOpen(false);
+    if (id) { // Mode Edit
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === id
+            ? {
+                ...task,
+                taskName: taskData.taskName,
+                deadline: taskData.deadline || undefined,
+                urgency: parseInt(taskData.urgency, 10),
+                impact: parseInt(taskData.impact, 10),
+                effort: parseInt(taskData.effort, 10),
+                score,
+              }
+            : task
+        )
+      );
+    } else {
+      const newTask: Task = {
+        id: crypto.randomUUID(),
+        taskName: taskData.taskName,
+        deadline: taskData.deadline || undefined,
+        urgency: parseInt(taskData.urgency, 10),
+        impact: parseInt(taskData.impact, 10),
+        effort: parseInt(taskData.effort, 10),
+        score,
+      };
+      setTasks(prevTasks => [...prevTasks, newTask]);
+    }
+    handleCloseTaskModal();
   }, [calculatePriorityScore]);
+
+  const handleDeleteRequest = (taskId: string) => {
+    setTaskToDeleteId(taskId);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleCloseConfirmModal = () => {
+    setIsConfirmModalOpen(false);
+    setTaskToDeleteId(null);
+  };
+
+  const handleConfirmDeleteTask = useCallback(() => {
+    if (taskToDeleteId) {
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskToDeleteId));
+      handleCloseConfirmModal();
+    }
+  }, [taskToDeleteId]);
+
 
   const sortedTasks = [...tasks].sort((a, b) => {
     if (b.score !== a.score) {
@@ -128,15 +183,15 @@ const HomePage: FC = () => {
       <main className="w-full max-w-3xl">
         <div className="flex justify-center  mb-6">
           <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-start bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg hover:cursor-pointer transition-all duration-100 ease-in-out transform"
+            onClick={handleOpenAddModal}
+            className="flex items-center bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg hover:cursor-pointer transition-all duration-100 ease-in-out transform"
           >
             <PlusCircleIcon className="h-6 w-6 mr-2" />
             Tambah Tugas
           </button>
         </div>
 
-        {isClient && <TaskList tasks={sortedTasks} />}
+        {isClient && <TaskList tasks={sortedTasks} onEditTask={handleOpenEditModal} onDeleteTask={handleDeleteRequest} />}
         
         {!isClient && (
             <div className="text-center text-slate-400 mt-10">
@@ -150,16 +205,29 @@ const HomePage: FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h7.5M8.25 12h7.5m-7.5 5.25h7.5M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                 </svg>
                 <h2 className="text-2xl font-semibold mb-2">Belum Ada Tugas</h2>
-                <p className="text-slate-300">Mulai tambahkan tugas pertama untuk diprioritaskan!</p>
+                <p className="text-slate-300">Mulai tambahkan tugas pertama Anda untuk diprioritaskan!</p>
             </div>
         )}
       </main>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAddTask={handleAddTask}
-      />
+      {isTaskModalOpen && (
+        <TaskModal
+          isOpen={isTaskModalOpen}
+          onClose={handleCloseTaskModal}
+          onSaveTask={handleSaveTask}
+          editingTask={editingTask} // Kirim data tugas yang diedit ke Modal
+        />
+      )}
+
+      {isConfirmModalOpen && (
+        <ConfirmModal
+          isOpen={isConfirmModalOpen}
+          onClose={handleCloseConfirmModal}
+          onConfirm={handleConfirmDeleteTask}
+          title="Konfirmasi Hapus Tugas"
+          message="Apakah kamu yakin ingin menghapus tugas ini? Tindakan ini tidak dapat dibatalkan."
+        />
+      )}
 
       <footer className="w-full max-w-4xl text-center mt-16 mb-8">
         <p className="text-sm text-slate-500">

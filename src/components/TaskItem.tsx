@@ -1,12 +1,14 @@
 import { FC } from 'react';
-import { CalendarDaysIcon, SparklesIcon, BoltIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
+import { CalendarDaysIcon, SparklesIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Task } from '../app/page';
 
 interface TaskItemProps {
   task: Task;
+  onEdit: () => void; // Prop untuk handle klik edit
+  onDelete: () => void; // Prop untuk handle klik delete
 }
 
-const TaskItem: FC<TaskItemProps> = ({ task }) => {
+const TaskItem: FC<TaskItemProps> = ({ task, onEdit, onDelete }) => {
   const formatDate = (dateString?: string): string => {
     if (!dateString) return 'Tidak ada';
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -25,24 +27,42 @@ const TaskItem: FC<TaskItemProps> = ({ task }) => {
   
   const getPillText = (value: number, type: 'urgency' | 'impact' | 'effort'): string => {
     const scale: { [key: number]: string } = {
-      1: type === 'effort' ? 'Sangat Mudah' : (type === 'urgency' ? 'Tidak Mendesak' : 'Kecil'),
+      1: type === 'effort' ? 'Sgt. Mudah' : (type === 'urgency' ? 'Tdk Mendesak' : 'Kecil'),
       2: 'Rendah',
       3: 'Sedang',
       4: 'Tinggi',
-      5: type === 'effort' ? 'Sangat Sulit' : (type === 'urgency' ? 'Sangat Mendesak' : 'Besar')
+      5: type === 'effort' ? 'Sgt. Sulit' : (type === 'urgency' ? 'Sgt. Mendesak' : 'Besar')
     };
     return scale[value] || 'N/A';
   };
 
   return (
     <div className="bg-slate-800/70 border border-slate-700 p-5 rounded-xl shadow-lg hover:shadow-sky-500/10 transition-shadow duration-200">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
-        <h3 className="text-xl font-semibold text-sky-300 mb-2 sm:mb-0 break-all">
-          {task.taskName}
-        </h3>
-        <div className="flex items-center text-sm font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 px-3 py-1 rounded-full">
-          <SparklesIcon className="h-5 w-5 mr-1.5 text-sky-400" />
-          Skor Prioritas: {task.score}
+      <div className="flex flex-col sm:flex-row justify-between items-start mb-3">
+        <div className="flex-grow mb-2 sm:mb-0">
+            <h3 className="text-xl font-semibold text-sky-300 break-all">
+            {task.taskName}
+            </h3>
+        </div>
+        <div className="flex items-center space-x-2 flex-shrink-0">
+            <button 
+                onClick={onEdit} 
+                className="p-2 text-slate-400 hover:text-sky-400 hover:cursor-pointer transition-colors"
+                aria-label="Edit tugas"
+            >
+                <PencilSquareIcon className="h-5 w-5" />
+            </button>
+            <button 
+                onClick={onDelete} 
+                className="p-2 text-slate-400 hover:text-red-400 hover:cursor-pointer transition-colors"
+                aria-label="Hapus tugas"
+            >
+                <TrashIcon className="h-5 w-5" />
+            </button>
+            <div className="flex items-center text-sm font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 px-3 py-1 rounded-full">
+                <SparklesIcon className="h-5 w-5 mr-1.5 text-sky-400" />
+                Skor: {task.score}
+            </div>
         </div>
       </div>
 

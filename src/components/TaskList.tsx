@@ -4,8 +4,8 @@ import { Task } from '../app/page';
 
 interface TaskListProps {
   tasks: Task[];
-  onEditTask: (task: Task) => void; // Tambahkan prop untuk handle edit
-  onDeleteTask: (taskId: string) => void; // Tambahkan prop untuk handle delete
+  onEditTask: (task: Task) => void;
+  onDeleteTask: (taskId: string) => void;
 }
 
 const TaskList: FC<TaskListProps> = ({ tasks, onEditTask, onDeleteTask }) => {
@@ -19,8 +19,8 @@ const TaskList: FC<TaskListProps> = ({ tasks, onEditTask, onDeleteTask }) => {
         <TaskItem 
           key={task.id} 
           task={task} 
-          onEdit={() => onEditTask(task)} // Teruskan fungsi edit
-          onDelete={() => onDeleteTask(task.id)} // Teruskan fungsi delete
+          onEdit={() => onEditTask(task)}
+          onDelete={() => onDeleteTask(task.id)}
         />
       ))}
     </div>

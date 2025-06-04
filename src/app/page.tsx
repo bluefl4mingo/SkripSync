@@ -100,7 +100,7 @@ const HomePage: FC = () => {
       effort: taskData.effort,
     });
 
-    if (id) { // Mode Edit
+    if (id) {
       setTasks(prevTasks =>
         prevTasks.map(task =>
           task.id === id
@@ -215,7 +215,7 @@ const HomePage: FC = () => {
           isOpen={isTaskModalOpen}
           onClose={handleCloseTaskModal}
           onSaveTask={handleSaveTask}
-          editingTask={editingTask} // Kirim data tugas yang diedit ke Modal
+          editingTask={editingTask}
         />
       )}
 

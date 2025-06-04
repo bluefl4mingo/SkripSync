@@ -86,7 +86,7 @@ const TaskModal: FC<ModalProps> = ({ isOpen, onClose, onSaveTask, editingTask })
   const criteria: Criterion[] = [
     { id: 'urgency', label: 'Tingkat Urgensi', value: urgency, setter: setUrgency, help: "Seberapa mendesak tugas ini? (1: Tidak mendesak - 5: Sangat mendesak)" },
     { id: 'impact', label: 'Potensi Dampak', value: impact, setter: setImpact, help: "Seberapa besar dampak jika tugas ini selesai/tidak? (1: Dampak kecil - 5: Dampak besar)" },
-    { id: 'effort', label: 'Estimasi Usaha', value: effort, setter: setEffort, help: "Seberapa sulit/banyak usaha yang dibutuhkan? (1: Sangat mudah - 5: Sangat sulit)" },
+    { id: 'effort', label: 'Estimasi Usaha', value: effort, setter: setEffort, help: "Seberapa sulit/banyak usaha yang dibutuhkan? (1: Sangat sulit - 5: Sangat mudah)" },
   ];
 
   const modalTitle = editingTask ? "Edit Tugas" : "Tambah Tugas Baru";
@@ -148,8 +148,8 @@ const TaskModal: FC<ModalProps> = ({ isOpen, onClose, onSaveTask, editingTask })
                 {[1, 2, 3, 4, 5].map(val => (
                   <option key={val} value={String(val)} className="bg-slate-700 text-white">
                     {val} - {
-                      val === 1 ? (criterion.id === 'effort' ? 'Sangat Mudah' : (criterion.id === 'urgency' ? 'Tidak Mendesak' : 'Dampak Kecil')) :
-                      val === 5 ? (criterion.id === 'effort' ? 'Sangat Sulit' : (criterion.id === 'urgency' ? 'Sangat Mendesak' : 'Dampak Besar')) :
+                      val === 1 ? (criterion.id === 'effort' ? 'Sangat Sulit' : (criterion.id === 'urgency' ? 'Tidak Mendesak' : 'Dampak Kecil')) :
+                      val === 5 ? (criterion.id === 'effort' ? 'Sangat Mudah' : (criterion.id === 'urgency' ? 'Sangat Mendesak' : 'Dampak Besar')) :
                       (val === 2 ? 'Rendah' : (val === 3 ? 'Sedang' : 'Tinggi'))
                     }
                   </option>

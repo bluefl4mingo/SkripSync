@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { CalendarDaysIcon, SparklesIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { CalendarDaysIcon, SparklesIcon, PencilSquareIcon, TrashIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import { Task } from '../app/page';
 
 interface TaskItemProps {
@@ -27,31 +27,24 @@ const TaskItem: FC<TaskItemProps> = ({ task, onEdit, onDelete }) => {
     return 'bg-red-500/20 text-red-200 border-red-500/30';
   };
 
-  const getPillColorReversed = (value: number): string => {
-    if (value === 5) return 'bg-teal-500/20 text-teal-200 border-teal-500/30';
-    if (value === 4) return 'bg-green-500/20 text-green-200 border-green-500/30';
-    if (value === 3) return 'bg-yellow-500/20 text-yellow-200 border-yellow-500/30';
-    if (value === 2) return 'bg-orange-500/20 text-orange-200 border-yellow-500/30';
-    return 'bg-red-500/20 text-red-200 border-red-500/30';
-  };
-  
-  const getPillText = (value: number, type: 'urgency' | 'impact' | 'effort'): string => {
+  const getPillText = (value: number, type: 'urgency' | 'impact' | 'effort' | 'prioritylvl' | 'learningpoint'): string => {
     const scale: { [key: number]: string } = {
-      1: type === 'effort' ? 'Sangat Sulit' : (type === 'urgency' ? 'Tidak Mendesak' : 'Kecil'),
-      2: type === 'effort' ? 'Tinggi' : 'Rendah',
+      1: type === 'effort' ? 'Sangat Sulit' : (type === 'urgency' ? 'Tidak Mendesak' : (type === 'prioritylvl' ? 'Sangat Rendah' : 'Sangat Kecil')),
+      2: type === 'effort' ? 'Tinggi' : (type === 'learningpoint' ? 'Kecil' : 'Rendah'),
       3: 'Sedang',
-      4: type === 'effort' ? 'Rendah' : 'Tinggi',
-      5: type === 'effort' ? 'Sangat Mudah' : (type === 'urgency' ? 'Sangat Mendesak' : 'Besar')
+      4: type === 'effort' ? 'Rendah' : (type === 'learningpoint' ? 'Besar' : 'Tinggi'),
+      5: type === 'effort' ? 'Sangat Mudah' : (type === 'urgency' ? 'Sangat Mendesak' : (type === 'prioritylvl' ? 'Sangat Tinggi' : 'Sangat Besar')),
     };
     return scale[value] || 'N/A';
   };
 
   return (
-    <div className="bg-slate-800/70 border border-slate-700 p-5 rounded-xl shadow-lg hover:shadow-sky-500/20 hover:shadow-md transition-shadow duration-200">
-      <div className="flex flex-col sm:flex-row justify-between items-start mb-3">
+    <div className="bg-slate-800/70 border border-slate-700 p-5 rounded-xl shadow-lg hover:shadow-sky-500/20 hover:shadow-md transition-shadow duration-250">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-3">
         <div className="flex-grow mb-2 sm:mb-0">
-            <h3 className="text-xl font-semibold text-sky-200 break-all">
-            {task.taskName}
+            <h3 className="flex text-xl font-semibold text-sky-200 break-all items-center">
+              <InformationCircleIcon className="h-5 w-5 mr-2 text-sky-300"/>
+              {task.taskName}
             </h3>
         </div>
         <div className="flex items-center space-x-2 flex-shrink-0">
@@ -88,17 +81,27 @@ const TaskItem: FC<TaskItemProps> = ({ task, onEdit, onDelete }) => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
         <div className={`flex items-center p-2.5 rounded-md border ${getPillColor(task.urgency)}`}>
           <div>
-            <span className="font-semibold">Urgensi:</span> {getPillText(task.urgency, 'urgency')} ({task.urgency})
+            <span className="font-semibold">Urgency:</span> {getPillText(task.urgency, 'urgency')} ({task.urgency})
           </div>
         </div>
         <div className={`flex items-center p-2.5 rounded-md border ${getPillColor(task.impact)}`}>
           <div>
-            <span className="font-semibold">Dampak:</span> {getPillText(task.impact, 'impact')} ({task.impact})
+            <span className="font-semibold">Impact:</span> {getPillText(task.impact, 'impact')} ({task.impact})
           </div>
         </div>
-        <div className={`flex items-center p-2.5 rounded-md border ${getPillColorReversed(task.effort)}`}>
+        <div className={`flex items-center p-2.5 rounded-md border ${getPillColor(task.effort)}`}>
           <div>
-            <span className="font-semibold">Usaha:</span> {getPillText(task.effort, 'effort')} ({task.effort})
+            <span className="font-semibold">Effort:</span> {getPillText(task.effort, 'effort')} ({task.effort})
+          </div>
+        </div>
+        <div className={`flex items-center p-2.5 rounded-md border ${getPillColor(task.prioritylvl)}`}>
+          <div>
+            <span className="font-semibold">Intuitive Priority:</span> {getPillText(task.prioritylvl, 'prioritylvl')} ({task.prioritylvl})
+          </div>
+        </div>
+        <div className={`flex items-center p-2.5 rounded-md border ${getPillColor(task.learningpoint)}`}>
+          <div>
+            <span className="font-semibold">Learning Potential:</span> {getPillText(task.learningpoint, 'learningpoint')} ({task.learningpoint})
           </div>
         </div>
       </div>

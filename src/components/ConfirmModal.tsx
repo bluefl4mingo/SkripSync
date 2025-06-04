@@ -38,7 +38,7 @@ const ConfirmModal: FC<ConfirmationModalProps> = ({ isOpen, onClose, onConfirm, 
     <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50 transition-opacity duration-300 ease-in-out">
       <div className="bg-slate-800 p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-md transform transition-all duration-300 ease-in-out scale-100 opacity-100">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-amber-400 flex items-center">
+          <h2 className="text-xl font-semibold text-amber-400/90 flex items-center">
             <ExclamationTriangleIcon className="h-6 w-6 mr-2 text-amber-400" />
             {title}
           </h2>
@@ -55,7 +55,7 @@ const ConfirmModal: FC<ConfirmationModalProps> = ({ isOpen, onClose, onConfirm, 
           <button
             type="button"
             onClick={onConfirm}
-            className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all text-sm hover:cursor-pointer"
+            className="px-5 py-2.5 bg-red-500/70 hover:bg-red-500 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all text-sm hover:cursor-pointer"
           >
             Ya, Hapus
           </button>

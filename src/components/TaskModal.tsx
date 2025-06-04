@@ -159,7 +159,7 @@ const TaskModal: FC<ModalProps> = ({ isOpen, onClose, onSaveTask, editingTask })
                       {val} - {
                         val === 1 ? (criterion.id === 'effort' ? 'Sangat Sulit' : (criterion.id === 'urgency' ? 'Tidak Mendesak' : (criterion.id === 'impact' ? 'Dampak Kecil' : (criterion.id === 'prioritylvl' ? 'Sangat Rendah' : 'Sangat Kecil')))) :
                         val === 5 ? (criterion.id === 'effort' ? 'Sangat Mudah' : (criterion.id === 'urgency' ? 'Sangat Mendesak' : (criterion.id === 'impact' ? 'Dampak Besar' : (criterion.id === 'prioritylvl' ? 'Sangat Tinggi' : 'Sangat Besar')))) :
-                        (val === 2 ? 'Rendah' : (val === 3 ? 'Sedang' : 'Tinggi'))
+                        (val === 2 ? (criterion.id === 'effort' ? 'Tinggi' : (criterion.id === 'learningpoint' ? 'Kecil' : 'Rendah') ) : (val === 3 ? 'Sedang' : (criterion.id === 'effort' ? 'Rendah' : (criterion.id === 'learningpoint' ? 'Besar' : 'Tinggi'))))
                       }
                     </option>
                   ))}

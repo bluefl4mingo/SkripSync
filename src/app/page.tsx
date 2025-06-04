@@ -206,8 +206,8 @@ const HomePage: FC = () => {
         </div>
 
         <div className="bg-slate-800/50 p-6 rounded-xl shadow-xl border border-slate-700">
-          <h2 className="text-3xl font-semibold text-sky-300 mb-6 flex items-center">
-            <ListBulletIcon className="h-8 w-8 mr-3 text-sky-400" />
+          <h2 className="text-3xl font-semibold text-sky-100 mb-6 flex items-center">
+            <ListBulletIcon className="h-8 w-8 mr-3 text-sky-200" />
             Daftar Tugas
           </h2>
 
